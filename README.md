@@ -1,28 +1,65 @@
-# Crumb
+<div align="center">
 
-Block cookie nags in Firefox. Don't give a crumb.
+<img src="assets/icon-source.png" width="180" height="180" alt="Crumb logo" />
 
-A minimal, declarative cookie-banner blocker. No telemetry, no DOM scanning, no
-"reject all" auto-clicking — just hides the banner and blocks the scripts.
+# 🍪 Crumb
 
-## How it works
+**Block cookie nags in Firefox. Don't give a crumb.**
+
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![Firefox MV3](https://img.shields.io/badge/firefox-MV3-orange.svg)](https://addons.mozilla.org/firefox/addon/crumb/)
+[![Tests](https://img.shields.io/badge/tests-17%20passing-brightgreen.svg)](scripts/src/parse.test.js)
+
+</div>
+
+---
+
+## ✨ Why Crumb?
+
+Cookie consent banners are the worst thing about the modern web. Crumb makes them go away.
+
+It's a Firefox port of the [Hush](https://github.com/oblador/hush) philosophy — same source-of-truth, same declarative approach, same trust model. Tiny, open, and built for people who trust extensions less the more they do.
+
+### 🥇 vs. "I don't care about cookies" (the abandoned one)
+
+The original was acquired by Avast, now owned by [Gen Digital](https://en.wikipedia.org/wiki/Gen_Digital) — the same conglomerate behind Avast, AVG, and Norton, with a [documented history](https://en.wikipedia.org/wiki/Avast#Jumpshot_subsidiary_data_privacy_scandal) of harvesting user data and selling it. It hasn't shipped a meaningful update in two years and recent reviews say it no longer blocks reliably.
+
+Crumb is built today against a fresh upstream snapshot, has no parent company, no telemetry, no remote configuration, and the entire build pipeline is on GitHub under MIT. If you don't trust the binary, read the 100 lines of build script and 25 lines of runtime, refresh the filter list yourself, and rebuild from source.
+
+### 🤫 Like Hush
+
+| | Crumb | Hush |
+| --- | :-: | :-: |
+| Declarative-only (no DOM scanning, no auto-clicking) | ✅ | ✅ |
+| Zero telemetry, zero remote calls | ✅ | ✅ |
+| Open source, MIT | ✅ | ✅ |
+| Bundled Fanboy's Cookie Monster + curated overlay | ✅ | ✅ |
+| Tiny runtime (≈25 LoC) | ✅ | ✅ |
+| Platform | Firefox | Safari |
+
+---
+
+## 🚀 Install
+
+[![Get the Add-on](https://blog.mozilla.org/addons/files/2020/04/get-the-addon-fx-apr-2020.svg)](https://addons.mozilla.org/firefox/addon/crumb/)
+
+Or load it manually from source — see [Build](#-build) below.
+
+---
+
+## 🛠️ How it works
 
 Three outputs are generated from a set of source filter lists at build time:
 
-- **`extension/data/dnr-rules.json`** — a `declarativeNetRequest` static
-  ruleset that blocks consent-management scripts at the network layer.
-- **`extension/data/generic.css`** — element-hide rules with no domain scope,
-  injected on every page via `content_scripts`.
-- **`extension/data/cosmetic.js`** — a `{ hostname: "selectors" }` lookup
-  table consumed by a ~25-line content script that walks parent domains and
-  inserts a single `<style>` at `document_start`.
+- **`extension/data/dnr-rules.json`** — a `declarativeNetRequest` static ruleset that blocks consent-management scripts at the network layer.
+- **`extension/data/generic.css`** — element-hide rules with no domain scope, injected on every page via `content_scripts`.
+- **`extension/data/cosmetic.js`** — a `{ hostname: "selectors" }` lookup table consumed by a ~25-line content script that walks parent domains and inserts a single `<style>` at `document_start`.
 
-That's the entire runtime. No background script.
+That's the entire runtime. No background script. No popup. No options page. No settings to misconfigure.
 
-## Source lists
+## 📚 Source lists
 
-Source-of-truth lives in `data/` and follows the same layout as
-[Hush](https://github.com/oblador/hush):
+Source-of-truth lives in `data/` and follows the same layout as Hush:
 
 | File | Purpose |
 | --- | --- |
@@ -30,25 +67,31 @@ Source-of-truth lives in `data/` and follows the same layout as
 | `data/generic.txt` | Element-hide rules with no domain scope |
 | `data/site-specific.txt` | Per-domain element-hide and network rules |
 | `data/third-party.txt` | Cross-site network blocks |
-| `data/ignored.txt` | Subtractive: lines here are stripped from sources before parsing |
+| `data/ignored.txt` | Subtractive — lines here are stripped from sources before parsing |
 
-## Build
+## 🧱 Build
 
 ```sh
 npm install
+npm run fetch       # refresh the Fanboy snapshot from upstream
 npm run build       # writes extension/data/{dnr-rules.json,generic.css,cosmetic.js}
 npm run dev         # web-ext run — launches Firefox with the extension loaded
+npm run test        # parser unit tests
 npm run lint        # web-ext lint
 npm run package     # minified build + zipped artifact in web-ext-artifacts/
 ```
 
-## Credits
+## 🐛 A site is still showing a banner
 
-- Filter list strategy and curated overlay structure are adapted from
-  [Hush](https://github.com/oblador/hush) by Joel Arvidsson (MIT).
-- [Fanboy's Cookie Monster](https://easylist.to/) by Ryan Brown
-  ([CC BY 3.0](https://creativecommons.org/licenses/by/3.0/)).
+Open an [issue](https://github.com/rcurranmoz/crumb/issues) with the URL and, if you can, a CSS selector for the banner element (right-click → Inspect). Most fixes are a one-line addition to `data/site-specific.txt`.
 
-## License
+---
+
+## 🙏 Credits
+
+- Filter list strategy and curated overlay structure are adapted from [Hush](https://github.com/oblador/hush) by Joel Arvidsson (MIT).
+- [Fanboy's Cookie Monster](https://easylist.to/) by Ryan Brown ([CC BY 3.0](https://creativecommons.org/licenses/by/3.0/)).
+
+## 📄 License
 
 MIT — see [LICENSE](LICENSE).
