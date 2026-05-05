@@ -1,0 +1,9 @@
+! ----- Ignored rules -----
+! These rules will be filtered out, so see
+! this as inverted block list
+
+! Rules from fanboy that breaks valid uses
+##.uk-notify-message-info
+
+! Custom unsupported syntax
+podleze-piekielko.pl#$#abort-on-property-read cookieman

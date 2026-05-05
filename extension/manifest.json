@@ -1,0 +1,37 @@
+{
+  "manifest_version": 3,
+  "name": "Crumb",
+  "short_name": "Crumb",
+  "version": "0.1.0",
+  "description": "Block cookie nags. Don't give a crumb.",
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "crumb@rcurran.dev",
+      "strict_min_version": "128.0",
+      "data_collection_permissions": {
+        "required": ["none"]
+      }
+    }
+  },
+  "permissions": ["declarativeNetRequest"],
+  "host_permissions": ["<all_urls>"],
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "css": ["data/generic.css"],
+      "js": ["data/cosmetic.js", "inject.js"],
+      "run_at": "document_start",
+      "all_frames": true,
+      "match_about_blank": false
+    }
+  ],
+  "declarative_net_request": {
+    "rule_resources": [
+      {
+        "id": "cookie_nags",
+        "enabled": true,
+        "path": "data/dnr-rules.json"
+      }
+    ]
+  }
+}

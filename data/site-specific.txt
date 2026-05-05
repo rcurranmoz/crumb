@@ -1,0 +1,99 @@
+! ----- Site specific rules -----
+
+! ----- Cookie consent scripts -----
+
+||jouw.postnl.nl/widgets/cookie-widget/bootstrap.js
+||sourcepointcmp.bloomberg.com$script
+||sourcepoint.theonion.com$script
+||d.sourcepoint.lbc.co.uk$script
+||contributions.guardianapis.com$script
+||datacite.org/javascripts/consent.js
+||cmp2.macwelt.de$script
+||cmp.aftenposten.no$script
+||cmp.bt.no$script
+||manomano.fr/consent.cookiebot.com/uc.js
+||sourcepoint.theguardian.com/*/gdpr-tcf.*.js
+/wrapperMessagingWithoutDetection.js$domain=n-tv.de
+
+! ----- Hidden cookie consent selectors -----
+nytimes.com##.gdpr
+cnbc.com###cnbcgdpr
+paypal.com###gdprCookieBanner
+paypal.com###ccpaCookieBanner
+fedex.com##.fxg-cookie-consent
+picnic.app##.cookies
+spotify.com###onetrust-banner-sdk
+kotaku.com,insider.com,mopo.de##[id^="sp_message_container_"]
+flyertalk.com###truste_box_overlay
+lg.com##.cookie-banner
+mubi.com###__next > div:first-child .appear-enter-done
+nytimes.com###__next > footer + div
+johnlewis.com##[data-test="cookie-overlay"]
+aftonbladet.se##body>div>#psi
+wolt.com##[class^="GdprConsentsModal"]
+producthunt.com##[data-test="dismiss-CookiePopup"]
+telegraph.co.uk##div[id^="sp_message_container_"]
+
+! Safari exclude rules are too coarse, so re-enable here
+rockpapershotgun.com###onetrust-consent-sdk
+
+! ----- Hidden newsletter signup selectors -----
+
+sifted.eu###signUp
+breakit.se##.leadinModal
+
+! ----- Hidden donation nag selectors -----
+
+npr.com##.donation-portal-modal
+
+! ----- Google mobile nags ------
+google.ae,google.at,google.be,google.bg,google.by,google.ca,google.ch,google.cl,google.co.id,google.co.il,google.co.in,google.co.jp,google.co.ke,google.co.kr,google.co.nz,google.co.th,google.co.uk,google.co.ve,google.co.za,google.com,google.com.ar,google.com.au,google.com.br,google.com.co,google.com.ec,google.com.eg,google.com.hk,google.com.mx,google.com.my,google.com.pe,google.com.ph,google.com.pk,google.com.py,google.com.sa,google.com.sg,google.com.tr,google.com.tw,google.com.ua,google.com.uy,google.com.vn,google.cz,google.de,google.dk,google.dz,google.ee,google.es,google.fi,google.fr,google.gr,google.hr,google.hu,google.ie,google.it,google.lt,google.lv,google.nl,google.no,google.pl,google.pt,google.ro,google.rs,google.ru,google.se,google.sk##[class*="__mobile-promo"]
+
+! ----- Exceptions to unbreak sites -----
+
+! Safari exclude rules are unable to target iframes, so unblock all
+@@||cdn.privacy-mgmt.com^$domain=ekstrabladet.dk|giga.de|manager-magazin.de|sport1.de|vtm.begmt.com|welt.de
+
+coolblue.nl#@#.cookie-notification__body
+danskebank.dk#@#.cookie-consent-banner
+postoffice.co.uk#@##ensNotifyBanner
+postoffice.co.uk#@#.ensNotifyBanner
+wko.at#@##cookiehint
+automl.qeexo.com#@#.privacy-container
+sole-runner.com#@##CookiePlus
+mathem.se#@#.cookie-details
+cercacasa.it#@#.accept-cookies
+concursolutions.com#@#.truste_overlay
+wirtschaftsagentur.at#@#.cookie-consent
+adidas.com,adidas.co.uk,adidas.tr,adidas.fi,adidas.ch,adidas.no,adidas.nl,adidas.be,adidas.it,adidas.es,adidas.fr,adidas.de,adidas.se,adidas.dk,adidas.ru#@#div[class*="cookie-consent-modal_"]
+sparda-sw.de#@#.cookie-consent
+plex.tv#@#.cookie-consent
+support.activision.com#@#.gdpr
+engelvoelkers.com#@#.cookie-consent-dialog
+kvk.nl#@##cookie-consent
+holzkern.com#@#.amgdprcookie-modal-template
+neuhauschocolates.com#@#.consent-container
+smb.museum#@##cookieman-modal
+bmbf.de#@#.CookieBanner
+bmbf.de#@##CookieBanner
+t-mobile.nl#@#.cookie-content
+bmeia.gv.at#@#.cookieman-modal
+clasohlson.com#@#js-cookie-notification
+qatarairways.com#@#cookieContainer
+
+@@||matomo.org
+@@||blog.mozilla.org
+@@||united-domains.de
+@@||terminix.com
+@@||evd-dormagen.de
+@@||gmx.net
+@@||web.de
+@@||wikifolio.com
+@@||technikmuseum.berlin
+@@||noyb.eu
+@@||gdpr.internetbrands.com^$domain=flyertalk.com
+@@/cookiecontrol-$domain=videogameschronicle.com
+@@||cookie-notice$domain=offthebeatenpath.com
+@@||cookie_consent$domain=deepmind.com
+@@||cookie-consent$domain=jarokelo.hu
+@@||usercentrics.eu^$script,subdocument,xmlhttprequest,domain=liebherr.com
