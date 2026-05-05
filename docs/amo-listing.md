@@ -48,13 +48,13 @@ cookies, gdpr, privacy, banners, consent, ccpa
 <rcurran@mozilla.com>  <!-- or a public alias if you'd rather not -->
 
 ## Support site
-<https://github.com/rcurran/crumb/issues>
+<https://github.com/rcurranmoz/crumb/issues>
 
 ## Privacy policy URL
-<https://github.com/rcurran/crumb/blob/main/PRIVACY.md>
+<https://github.com/rcurranmoz/crumb/blob/main/PRIVACY.md>
 
 ## Homepage URL
-<https://github.com/rcurran/crumb>
+<https://github.com/rcurranmoz/crumb>
 
 ## License
 MIT (matches LICENSE in repo root).

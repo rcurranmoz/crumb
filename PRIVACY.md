@@ -36,8 +36,8 @@ Neither permission is used for data collection.
 
 Crumb is open source under the MIT license. The full source — including every
 filter list and the build pipeline that produces the extension — lives at
-<https://github.com/rcurran/crumb>.
+<https://github.com/rcurranmoz/crumb>.
 
 ## Contact
 
-Issues or questions: <https://github.com/rcurran/crumb/issues>.
+Issues or questions: <https://github.com/rcurranmoz/crumb/issues>.
