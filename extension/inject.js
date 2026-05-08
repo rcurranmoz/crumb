@@ -26,7 +26,38 @@
 
   if (!selectors.length) return;
 
+  const joined = selectors.join(",\n");
   const style = document.createElement("style");
-  style.textContent = `${selectors.join(",\n")} { display: none !important; }`;
+  style.textContent = `${joined} { display: none !important; }`;
   (document.head || document.documentElement).appendChild(style);
+
+  // Only the top frame reports counts so the badge isn't stomped by subframes.
+  if (window.top !== window) return;
+
+  let lastCount = -1;
+  const report = () => {
+    let count;
+    try {
+      count = document.querySelectorAll(joined).length;
+    } catch {
+      return;
+    }
+    if (count === lastCount) return;
+    lastCount = count;
+    try {
+      browser.runtime.sendMessage({ type: "crumb:count", count });
+    } catch {}
+  };
+
+  let timer;
+  const schedule = () => {
+    clearTimeout(timer);
+    timer = setTimeout(report, 250);
+  };
+
+  report();
+  new MutationObserver(schedule).observe(document.documentElement, {
+    childList: true,
+    subtree: true,
+  });
 })();
