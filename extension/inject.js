@@ -5,6 +5,7 @@
   const host = location.hostname.toLowerCase();
   if (!host) return;
 
+  const matchedKeys = [];
   const selectors = [];
   const seen = new Set();
 
@@ -12,6 +13,7 @@
     const rule = map[key];
     if (!rule || seen.has(key)) return;
     seen.add(key);
+    matchedKeys.push(key);
     selectors.push(rule);
   };
 
@@ -24,6 +26,20 @@
     collect(parts.slice(i).join("."));
   }
 
+  const isTop = window.top === window;
+  let lastCount = 0;
+
+  if (isTop) {
+    browser.runtime.onMessage.addListener((msg) => {
+      if (msg?.type !== "crumb:status") return;
+      return Promise.resolve({
+        host,
+        matchedKey: matchedKeys[0] ?? null,
+        count: lastCount,
+      });
+    });
+  }
+
   if (!selectors.length) return;
 
   const joined = selectors.join(",\n");
@@ -32,9 +48,8 @@
   (document.head || document.documentElement).appendChild(style);
 
   // Only the top frame reports counts so the badge isn't stomped by subframes.
-  if (window.top !== window) return;
+  if (!isTop) return;
 
-  let lastCount = -1;
   const report = () => {
     let count;
     try {
