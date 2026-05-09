@@ -6,7 +6,9 @@
   if (!host) return;
 
   const matchedKeys = [];
-  const selectors = [];
+  // Domain-specific selectors: injected as CSS + counted.
+  // Generic selectors ("" key): counted only — generic.css already hides them.
+  const domainSelectors = [];
   const seen = new Set();
 
   const collect = (key) => {
@@ -14,7 +16,7 @@
     if (!rule || seen.has(key)) return;
     seen.add(key);
     matchedKeys.push(key);
-    selectors.push(rule);
+    domainSelectors.push(rule);
   };
 
   collect(host);
@@ -40,12 +42,21 @@
     });
   }
 
-  if (!selectors.length) return;
+  // Build the combined selector list for counting (domain-specific + generic).
+  const genericRule = map[""];
+  const allSelectors = genericRule
+    ? [...domainSelectors, genericRule]
+    : domainSelectors;
 
-  const joined = selectors.join(",\n");
-  const style = document.createElement("style");
-  style.textContent = `${joined} { display: none !important; }`;
-  (document.head || document.documentElement).appendChild(style);
+  if (!allSelectors.length) return;
+
+  if (domainSelectors.length) {
+    const style = document.createElement("style");
+    style.textContent = `${domainSelectors.join(",\n")} { display: none !important; }`;
+    (document.head || document.documentElement).appendChild(style);
+  }
+
+  const joined = allSelectors.join(",\n");
 
   // Only the top frame reports counts so the badge isn't stomped by subframes.
   if (!isTop) return;
