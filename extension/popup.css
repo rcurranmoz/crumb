@@ -1,0 +1,50 @@
+:root {
+  color-scheme: light dark;
+}
+
+body {
+  margin: 0;
+  padding: 12px 14px;
+  width: 260px;
+  font: 13px/1.4 system-ui, -apple-system, "Segoe UI", sans-serif;
+  background: Canvas;
+  color: CanvasText;
+}
+
+header {
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.version {
+  font-weight: 400;
+  opacity: 0.55;
+  font-feature-settings: "tnum";
+}
+
+#status {
+  padding: 8px 0;
+  border-top: 1px solid color-mix(in srgb, CanvasText 18%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, CanvasText 18%, transparent);
+  margin-bottom: 8px;
+  word-break: break-word;
+}
+
+footer {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+footer a {
+  color: LinkText;
+  text-decoration: none;
+}
+
+footer a:hover {
+  text-decoration: underline;
+}
+
+.dot {
+  opacity: 0.5;
+}
