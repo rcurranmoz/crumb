@@ -6,7 +6,9 @@
   if (!host) return;
 
   const matchedKeys = [];
-  const selectors = [];
+  // Domain-specific selectors: injected as CSS + counted.
+  // Generic selectors ("" key): counted only — generic.css already hides them.
+  const domainSelectors = [];
   const seen = new Set();
 
   const collect = (key) => {
@@ -14,7 +16,7 @@
     if (!rule || seen.has(key)) return;
     seen.add(key);
     matchedKeys.push(key);
-    selectors.push(rule);
+    domainSelectors.push(rule);
   };
 
   collect(host);
@@ -27,7 +29,7 @@
   }
 
   const isTop = window.top === window;
-  let lastCount = 0;
+  let maxCount = 0;
 
   if (isTop) {
     browser.runtime.onMessage.addListener((msg) => {
@@ -35,44 +37,63 @@
       return Promise.resolve({
         host,
         matchedKey: matchedKeys[0] ?? null,
-        count: lastCount,
+        count: maxCount,
       });
     });
   }
 
-  if (!selectors.length) return;
+  const genericRule = map[""];
 
-  const joined = selectors.join(",\n");
-  const style = document.createElement("style");
-  style.textContent = `${joined} { display: none !important; }`;
-  (document.head || document.documentElement).appendChild(style);
+  if (!domainSelectors.length && !genericRule) return;
+
+  if (domainSelectors.length) {
+    const style = document.createElement("style");
+    style.textContent = `${domainSelectors.join(",\n")} { display: none !important; }`;
+    (document.head || document.documentElement).appendChild(style);
+  }
 
   // Only the top frame reports counts so the badge isn't stomped by subframes.
   if (!isTop) return;
 
-  const report = () => {
-    let count;
-    try {
-      count = document.querySelectorAll(joined).length;
-    } catch {
-      return;
-    }
-    if (count === lastCount) return;
-    lastCount = count;
+  const send = (count) => {
+    if (count <= maxCount) return;
+    maxCount = count;
     try {
       browser.runtime.sendMessage({ type: "crumb:count", count });
     } catch {}
   };
 
-  let timer;
-  const schedule = () => {
-    clearTimeout(timer);
-    timer = setTimeout(report, 250);
-  };
+  // Count generic matches once at load — the megaquery (~15k selectors) is too
+  // expensive to re-run on every DOM mutation.
+  let genericCount = 0;
+  if (genericRule) {
+    try {
+      genericCount = document.querySelectorAll(genericRule).length;
+    } catch {}
+    send(genericCount);
+  }
 
-  report();
-  new MutationObserver(schedule).observe(document.documentElement, {
-    childList: true,
-    subtree: true,
-  });
+  // Domain-specific selectors are few; re-run on mutations to catch late injection.
+  if (domainSelectors.length) {
+    const domainJoined = domainSelectors.join(",\n");
+    let timer;
+    const report = () => {
+      let count;
+      try {
+        count = document.querySelectorAll(domainJoined).length;
+      } catch {
+        return;
+      }
+      send(genericCount + count);
+    };
+    const schedule = () => {
+      clearTimeout(timer);
+      timer = setTimeout(report, 250);
+    };
+    report();
+    new MutationObserver(schedule).observe(document.documentElement, {
+      childList: true,
+      subtree: true,
+    });
+  }
 })();

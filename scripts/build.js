@@ -59,9 +59,10 @@ const dnrOut = dnr.map((r, i) => ({
 }));
 
 // Cosmetic output: { hostname: "sel1, sel2" } — runtime joins into one rule.
+// "" key holds generic selectors (for counting only; CSS is handled by generic.css).
 const cosmeticOut = {};
 for (const [domain, selectors] of cosmetic) {
-  if (domain === "" || selectors.size === 0) continue;
+  if (selectors.size === 0) continue;
   cosmeticOut[domain] = [...selectors].join(",\n");
 }
 
