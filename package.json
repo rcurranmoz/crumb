@@ -11,7 +11,8 @@
     "test": "node --test scripts/src/parse.test.js",
     "dev": "web-ext run --source-dir=extension --firefox=firefox",
     "lint": "web-ext lint --source-dir=extension",
-    "package": "npm run build:min && web-ext build --source-dir=extension --artifacts-dir=web-ext-artifacts --overwrite-dest"
+    "package": "npm run build:min && web-ext build --source-dir=extension --artifacts-dir=web-ext-artifacts --overwrite-dest",
+    "release:upload": "node scripts/amo-upload.js"
   },
   "engines": {
     "node": ">=18"
