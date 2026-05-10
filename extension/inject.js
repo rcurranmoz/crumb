@@ -29,7 +29,7 @@
   }
 
   const isTop = window.top === window;
-  let lastCount = 0;
+  let maxCount = 0;
 
   if (isTop) {
     browser.runtime.onMessage.addListener((msg) => {
@@ -37,18 +37,14 @@
       return Promise.resolve({
         host,
         matchedKey: matchedKeys[0] ?? null,
-        count: lastCount,
+        count: maxCount,
       });
     });
   }
 
-  // Build the combined selector list for counting (domain-specific + generic).
   const genericRule = map[""];
-  const allSelectors = genericRule
-    ? [...domainSelectors, genericRule]
-    : domainSelectors;
 
-  if (!allSelectors.length) return;
+  if (!domainSelectors.length && !genericRule) return;
 
   if (domainSelectors.length) {
     const style = document.createElement("style");
@@ -56,35 +52,48 @@
     (document.head || document.documentElement).appendChild(style);
   }
 
-  const joined = allSelectors.join(",\n");
-
   // Only the top frame reports counts so the badge isn't stomped by subframes.
   if (!isTop) return;
 
-  let maxCount = 0;
-  const report = () => {
-    let count;
-    try {
-      count = document.querySelectorAll(joined).length;
-    } catch (e) {
-      console.warn("[crumb] querySelectorAll threw:", e.message);
-      return;
-    }
-    console.log("[crumb] report count:", count, "maxCount:", maxCount);
+  const send = (count) => {
     if (count <= maxCount) return;
     maxCount = count;
-    console.log("[crumb] sending badge:", count);
     try {
       browser.runtime.sendMessage({ type: "crumb:count", count });
-    } catch (e) {
-      console.warn("[crumb] sendMessage failed:", e.message);
-    }
+    } catch {}
   };
 
-  console.log("[crumb] observer set up, joined length:", joined.length);
-  report();
-  new MutationObserver(report).observe(document.documentElement, {
-    childList: true,
-    subtree: true,
-  });
+  // Count generic matches once at load — the megaquery (~15k selectors) is too
+  // expensive to re-run on every DOM mutation.
+  let genericCount = 0;
+  if (genericRule) {
+    try {
+      genericCount = document.querySelectorAll(genericRule).length;
+    } catch {}
+    send(genericCount);
+  }
+
+  // Domain-specific selectors are few; re-run on mutations to catch late injection.
+  if (domainSelectors.length) {
+    const domainJoined = domainSelectors.join(",\n");
+    let timer;
+    const report = () => {
+      let count;
+      try {
+        count = document.querySelectorAll(domainJoined).length;
+      } catch {
+        return;
+      }
+      send(genericCount + count);
+    };
+    const schedule = () => {
+      clearTimeout(timer);
+      timer = setTimeout(report, 250);
+    };
+    report();
+    new MutationObserver(schedule).observe(document.documentElement, {
+      childList: true,
+      subtree: true,
+    });
+  }
 })();
