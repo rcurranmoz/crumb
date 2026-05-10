@@ -61,28 +61,29 @@
   // Only the top frame reports counts so the badge isn't stomped by subframes.
   if (!isTop) return;
 
+  let maxCount = 0;
   const report = () => {
     let count;
     try {
       count = document.querySelectorAll(joined).length;
-    } catch {
+    } catch (e) {
+      console.warn("[crumb] querySelectorAll threw:", e.message);
       return;
     }
-    if (count === lastCount) return;
-    lastCount = count;
+    console.log("[crumb] report count:", count, "maxCount:", maxCount);
+    if (count <= maxCount) return;
+    maxCount = count;
+    console.log("[crumb] sending badge:", count);
     try {
       browser.runtime.sendMessage({ type: "crumb:count", count });
-    } catch {}
+    } catch (e) {
+      console.warn("[crumb] sendMessage failed:", e.message);
+    }
   };
 
-  let timer;
-  const schedule = () => {
-    clearTimeout(timer);
-    timer = setTimeout(report, 250);
-  };
-
+  console.log("[crumb] observer set up, joined length:", joined.length);
   report();
-  new MutationObserver(schedule).observe(document.documentElement, {
+  new MutationObserver(report).observe(document.documentElement, {
     childList: true,
     subtree: true,
   });
