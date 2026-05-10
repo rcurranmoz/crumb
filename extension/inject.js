@@ -55,9 +55,24 @@
   // Only the top frame reports counts so the badge isn't stomped by subframes.
   if (!isTop) return;
 
+  let unlocked = false;
+  const unlockBodyScroll = () => {
+    if (unlocked) return;
+    unlocked = true;
+    // Banners often come with body { overflow: hidden } and a sticky position
+    // hack to lock scroll. Once we've hidden a banner, restore scroll. Scoped
+    // to "we matched something" so we don't fight legitimate modals on pages
+    // where Crumb didn't fire.
+    const undo = document.createElement("style");
+    undo.textContent =
+      "html, body { overflow: auto !important; position: static !important; }";
+    (document.head || document.documentElement).appendChild(undo);
+  };
+
   const send = (count) => {
     if (count <= maxCount) return;
     maxCount = count;
+    if (count > 0) unlockBodyScroll();
     try {
       browser.runtime.sendMessage({ type: "crumb:count", count });
     } catch {}
