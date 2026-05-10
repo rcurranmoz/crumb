@@ -38,17 +38,14 @@ const reportLink = (host, url) => {
     return;
   }
 
-  if (!res) {
-    setStatus(`${host} — no site rule, 0 hidden`);
-    return;
-  }
-
   const displayHost = host.replace(/^w{2,3}\d*\./i, "");
   const match = res.matchedKey
     ? res.matchedKey === displayHost
       ? "site rule"
       : `site rule (${res.matchedKey})`
-    : "no site rule";
+    : res.count > 0
+      ? "generic rule"
+      : "no rule matched";
   const count = res.count > 0 ? `${res.count} hidden` : "0 hidden";
   setStatus(`${displayHost} — ${match}, ${count}`);
 })();
