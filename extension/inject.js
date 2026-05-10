@@ -63,14 +63,32 @@
     } catch {}
   };
 
-  // Count generic matches once at load — the megaquery (~15k selectors) is too
-  // expensive to re-run on every DOM mutation.
   let genericCount = 0;
-  if (genericRule) {
+  let domainCount = 0;
+  const sendTotal = () => send(genericCount + domainCount);
+
+  // Count generic matches after the DOM is parsed — at document_start it's
+  // mostly empty, and the megaquery (~15k selectors) is too expensive to re-run
+  // on every mutation. DOMContentLoaded covers most banners; the load event
+  // catches late injectors.
+  const recountGeneric = () => {
+    if (!genericRule) return;
     try {
-      genericCount = document.querySelectorAll(genericRule).length;
+      const c = document.querySelectorAll(genericRule).length;
+      if (c > genericCount) {
+        genericCount = c;
+        sendTotal();
+      }
     } catch {}
-    send(genericCount);
+  };
+
+  if (genericRule) {
+    if (document.readyState === "loading") {
+      document.addEventListener("DOMContentLoaded", recountGeneric, { once: true });
+    } else {
+      recountGeneric();
+    }
+    window.addEventListener("load", recountGeneric, { once: true });
   }
 
   // Domain-specific selectors are few; re-run on mutations to catch late injection.
@@ -78,13 +96,14 @@
     const domainJoined = domainSelectors.join(",\n");
     let timer;
     const report = () => {
-      let count;
+      let c;
       try {
-        count = document.querySelectorAll(domainJoined).length;
+        c = document.querySelectorAll(domainJoined).length;
       } catch {
         return;
       }
-      send(genericCount + count);
+      domainCount = c;
+      sendTotal();
     };
     const schedule = () => {
       clearTimeout(timer);
