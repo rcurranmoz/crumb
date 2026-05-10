@@ -20,6 +20,13 @@ header {
   font-weight: 400;
   opacity: 0.55;
   font-feature-settings: "tnum";
+  color: inherit;
+  text-decoration: none;
+}
+
+.version:hover {
+  opacity: 1;
+  text-decoration: underline;
 }
 
 #status {

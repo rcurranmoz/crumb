@@ -12,7 +12,10 @@ const reportLink = (host, url) => {
 };
 
 (async () => {
-  $("version").textContent = `v${browser.runtime.getManifest().version}`;
+  const v = browser.runtime.getManifest().version;
+  const versionEl = $("version");
+  versionEl.textContent = `v${v}`;
+  versionEl.href = `https://github.com/rcurranmoz/crumb/releases/tag/v${v}`;
 
   const [tab] = await browser.tabs.query({ active: true, currentWindow: true });
   if (!tab?.id || !tab.url || !/^https?:/i.test(tab.url)) {
