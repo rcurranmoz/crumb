@@ -24,17 +24,17 @@ It's a Firefox port of the [Hush](https://github.com/oblador/hush) philosophy �
 
 The original was acquired by Avast, now owned by [Gen Digital](https://en.wikipedia.org/wiki/Gen_Digital) — the same conglomerate behind Avast, AVG, and Norton, with a [documented history](https://en.wikipedia.org/wiki/Avast#Jumpshot_subsidiary_data_privacy_scandal) of harvesting user data and selling it. It hasn't shipped a meaningful update in two years and recent reviews say it no longer blocks reliably.
 
-Crumb is built today against a fresh upstream snapshot, has no parent company, no telemetry, no remote configuration, and the entire build pipeline is on GitHub under MIT. If you don't trust the binary, read the 100 lines of build script and 25 lines of runtime, refresh the filter list yourself, and rebuild from source.
+Crumb is built today against a fresh upstream snapshot, has no parent company, no telemetry, no remote configuration, and the entire build pipeline is on GitHub under MIT. If you don't trust the binary, read the source, refresh the filter list yourself, and rebuild from it.
 
 ### 🤫 Like Hush
 
 | | Crumb | Hush |
 | --- | :-: | :-: |
-| Declarative-only (no DOM scanning, no auto-clicking) | ✅ | ✅ |
+| No auto-clicking, no scripted UI interaction | ✅ | ✅ |
 | Zero telemetry, zero remote calls | ✅ | ✅ |
 | Open source, MIT | ✅ | ✅ |
 | Bundled Fanboy's Cookie Monster + curated overlay | ✅ | ✅ |
-| Tiny runtime (≈25 LoC) | ✅ | ✅ |
+| Minimal, event-driven runtime | ✅ | ✅ |
 | Platform | Firefox | Safari |
 
 ---
@@ -49,13 +49,17 @@ Or load it manually from source — see [Build](#-build) below.
 
 ## 🛠️ How it works
 
-Three outputs are generated from a set of source filter lists at build time:
+Three filter outputs are generated from source lists at build time:
 
 - **`extension/data/dnr-rules.json`** — a `declarativeNetRequest` static ruleset that blocks consent-management scripts at the network layer.
 - **`extension/data/generic.css`** — element-hide rules with no domain scope, injected on every page via `content_scripts`.
-- **`extension/data/cosmetic.js`** — a `{ hostname: "selectors" }` lookup table consumed by a ~25-line content script that walks parent domains and inserts a single `<style>` at `document_start`.
+- **`extension/data/cosmetic.js`** — a `{ hostname: "selectors" }` lookup table consumed by the content script.
 
-That's the entire runtime. No background script. No popup. No options page. No settings to misconfigure.
+The runtime is intentionally small and event-driven:
+
+- **Content script** (`inject.js`) — walks parent domains of the current host, inserts a single `<style>` at `document_start`, and once it confirms a banner was hidden, restores `body { overflow }` so the page can scroll past common scroll-lock tricks.
+- **Background script** (`background.js`) — a per-tab message router for the toolbar badge. No timers, no polling, no remote calls.
+- **Popup** (`popup.html`) — a read-only status panel showing version, current site, whether a per-host or generic rule fired, the number of elements hidden, and two links. No toggles, no options, no settings to misconfigure.
 
 ## 📚 Source lists
 

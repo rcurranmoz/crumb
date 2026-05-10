@@ -22,9 +22,11 @@ That's it.
 - **Declarative.** Crumb ships a fixed list of CSS selectors and network
   rules built from Fanboy's Cookie Monster list plus a small curated overlay.
   The browser's built-in declarativeNetRequest engine does the network
-  blocking. A 25-line content script handles the per-domain stylesheet.
-- **No telemetry.** Crumb has no background script, no remote calls, no
-  analytics, no crash reporting. Nothing leaves your browser.
+  blocking; a small content script handles per-domain element hiding.
+- **No telemetry.** Crumb makes zero remote calls — no analytics, no crash
+  reporting, no rule fetches at runtime. Nothing leaves your browser. The
+  included background script is a per-tab message router for the toolbar
+  badge; it never wakes up otherwise.
 - **No auto-clicking.** Crumb does not press "Reject All" buttons or
   interact with consent dialogs. Under GDPR you must explicitly consent to
   non-essential cookies; sites that respect that will treat a hidden banner
