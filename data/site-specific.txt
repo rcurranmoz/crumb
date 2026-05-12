@@ -33,6 +33,7 @@ aftonbladet.se##body>div>#psi
 wolt.com##[class^="GdprConsentsModal"]
 producthunt.com##[data-test="dismiss-CookiePopup"]
 telegraph.co.uk##div[id^="sp_message_container_"]
+thaller-kfo.de###BorlabsCookieBox
 
 ! Safari exclude rules are too coarse, so re-enable here
 rockpapershotgun.com###onetrust-consent-sdk
