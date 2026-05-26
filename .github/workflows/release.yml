@@ -13,21 +13,20 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-        with:
-          fetch-depth: 2
 
       - name: Detect version bump
         id: version
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           NEW=$(jq -r .version extension/manifest.json)
-          OLD=$(git show HEAD~1:extension/manifest.json 2>/dev/null | jq -r .version 2>/dev/null || echo "")
           echo "new=$NEW" >> "$GITHUB_OUTPUT"
-          if [ "$NEW" = "$OLD" ]; then
+          if gh release view "v${NEW}" >/dev/null 2>&1; then
             echo "skip=true" >> "$GITHUB_OUTPUT"
-            echo "No version change ($NEW unchanged) — skipping release."
+            echo "Release v${NEW} already exists — skipping."
           else
             echo "skip=false" >> "$GITHUB_OUTPUT"
-            echo "Version bumped: ${OLD:-<none>} → $NEW"
+            echo "Release v${NEW} not found — proceeding."
           fi
 
       - name: Setup Node
