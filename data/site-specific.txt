@@ -23,7 +23,7 @@ paypal.com###ccpaCookieBanner
 fedex.com##.fxg-cookie-consent
 picnic.app##.cookies
 spotify.com###onetrust-banner-sdk
-kotaku.com,insider.com,mopo.de,theguardian.com,aetv.com##[id^="sp_message_container_"]
+kotaku.com,insider.com,mopo.de,theguardian.com##[id^="sp_message_container_"]
 flyertalk.com###truste_box_overlay
 lg.com##.cookie-banner
 mubi.com###__next > div:first-child .appear-enter-done
@@ -35,6 +35,7 @@ producthunt.com##[data-test="dismiss-CookiePopup"]
 telegraph.co.uk##div[id^="sp_message_container_"]
 thaller-kfo.de###BorlabsCookieBox
 bundesanzeiger.de,unternehmensregister.de###cc
+aetv.com##div.z_999.pos_sticky
 
 ! Safari exclude rules are too coarse, so re-enable here
 rockpapershotgun.com###onetrust-consent-sdk
