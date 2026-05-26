@@ -60,11 +60,12 @@ jobs:
 
       - name: Create GitHub release
         if: steps.version.outputs.skip == 'false'
-        uses: softprops/action-gh-release@v2.6.1
-        with:
-          tag_name: v${{ steps.version.outputs.new }}
-          name: v${{ steps.version.outputs.new }}
-          generate_release_notes: true
-          files: |
-            web-ext-artifacts/crumb-${{ steps.version.outputs.new }}.zip
-            web-ext-artifacts/crumb-${{ steps.version.outputs.new }}-source.zip
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          VERSION=${{ steps.version.outputs.new }}
+          gh release create "v${VERSION}" \
+            --title "v${VERSION}" \
+            --generate-notes \
+            "web-ext-artifacts/crumb-${VERSION}.zip" \
+            "web-ext-artifacts/crumb-${VERSION}-source.zip"
