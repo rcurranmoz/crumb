@@ -23,7 +23,7 @@ paypal.com###ccpaCookieBanner
 fedex.com##.fxg-cookie-consent
 picnic.app##.cookies
 spotify.com###onetrust-banner-sdk
-kotaku.com,insider.com,mopo.de,theguardian.com##[id^="sp_message_container_"]
+kotaku.com,insider.com,mopo.de,theguardian.com,aetv.com##[id^="sp_message_container_"]
 flyertalk.com###truste_box_overlay
 lg.com##.cookie-banner
 mubi.com###__next > div:first-child .appear-enter-done
