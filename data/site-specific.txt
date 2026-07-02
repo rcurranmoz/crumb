@@ -36,6 +36,10 @@ telegraph.co.uk##div[id^="sp_message_container_"]
 thaller-kfo.de###BorlabsCookieBox
 bundesanzeiger.de,unternehmensregister.de###cc
 aetv.com##div.z_999.pos_sticky
+epoch.ai##.cookie-popup
+! mixedbread.com: shadcn/Radix consent card with no stable id/class — target the
+! card wrapping the Lucide cookie icon so we don't touch other cards (issue #27).
+www.mixedbread.com##div:has(> [data-slot="card-header"] .lucide-cookie)
 ! bayernportal.de: generic.css hides #cookieConsentOverlay, but the full-screen
 ! dimming scrim is a separate id-less div — hide it too (see issue #24).
 www.bayernportal.de##.bg-modal-overlay
