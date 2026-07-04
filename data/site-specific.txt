@@ -47,6 +47,7 @@ tabstack.ai##.cm__body
 www.foreignaffairs.com##._gdpr-banner
 okaneland.com###okane-consent
 digitalfracture.co.uk###ng-banner
+www.kinde.com###c-consent-banner
 
 ! Safari exclude rules are too coarse, so re-enable here
 rockpapershotgun.com###onetrust-consent-sdk
