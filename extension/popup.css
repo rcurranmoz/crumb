@@ -37,6 +37,20 @@ header {
   word-break: break-word;
 }
 
+.toggle {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  margin-bottom: 10px;
+  opacity: 0.85;
+  cursor: pointer;
+}
+
+.toggle input {
+  margin-top: 2px;
+  flex-shrink: 0;
+}
+
 footer {
   display: flex;
   gap: 8px;

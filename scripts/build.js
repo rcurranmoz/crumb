@@ -88,6 +88,15 @@ writeFileSync(
   `globalThis.__crumbCosmetic = ${json(cosmeticOut)};\n`,
 );
 
+// Auto-reject map (opt-in, see auto-reject.js): domain → "reject all" button
+// selector for full-page consent portals. Hand-authored, not filter-derived,
+// so just pass it through in the same shared-scope JS format as cosmetic.js.
+const autoReject = JSON.parse(read("data/auto-reject.json"));
+writeFileSync(
+  resolve(outDir, "auto-reject.js"),
+  `globalThis.__crumbAutoReject = ${json(autoReject)};\n`,
+);
+
 const networkBlocks = dnrOut.filter((r) => r.action.type === "block").length;
 const networkAllows = dnrOut.filter((r) => r.action.type === "allow").length;
 const cosmeticDomains = Object.keys(cosmeticOut).length;
