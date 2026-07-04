@@ -30,12 +30,14 @@ Crumb is built today against a fresh upstream snapshot, has no parent company, n
 
 | | Crumb | Hush |
 | --- | :-: | :-: |
-| No auto-clicking, no scripted UI interaction | ✅ | ✅ |
+| No auto-clicking, no scripted UI interaction, by default[^1] | ✅ | ✅ |
 | Zero telemetry, zero remote calls | ✅ | ✅ |
 | Open source, MIT | ✅ | ✅ |
 | Bundled Fanboy's Cookie Monster + curated overlay | ✅ | ✅ |
 | Minimal, event-driven runtime | ✅ | ✅ |
 | Platform | Firefox | Safari |
+
+[^1]: Off by default. Some cookie walls (Google, Yahoo) are a standalone page rather than a banner over real content, so there's nothing to hide — only an opt-in checkbox in the popup that clicks "Reject all" on the small, hardcoded list of portals in `data/auto-reject.json`. Never auto-*accepts* anything.
 
 ---
 
@@ -58,8 +60,9 @@ Three filter outputs are generated from source lists at build time:
 The runtime is intentionally small and event-driven:
 
 - **Content script** (`inject.js`) — walks parent domains of the current host, inserts a single `<style>` at `document_start`, and once it confirms a banner was hidden, restores `body { overflow }` so the page can scroll past common scroll-lock tricks.
+- **Auto-reject content script** (`auto-reject.js`) — opt-in only, scoped via `content_scripts.matches` to the handful of domains in `data/auto-reject.json`. Reads a `browser.storage.local` flag set by the popup checkbox; if enabled, clicks the "Reject all" button on standalone consent-wall pages that have no underlying content to hide.
 - **Background script** (`background.js`) — a per-tab message router for the toolbar badge. No timers, no polling, no remote calls.
-- **Popup** (`popup.html`) — a read-only status panel showing version, current site, whether a per-host or generic rule fired, the number of elements hidden, and two links. No toggles, no options, no settings to misconfigure.
+- **Popup** (`popup.html`) — a status panel showing version, current site, whether a per-host or generic rule fired, the number of elements hidden, and two links — plus one opt-in checkbox for the auto-reject behavior above. No other toggles, no other settings to misconfigure.
 
 ## 📚 Source lists
 
@@ -72,13 +75,14 @@ Source-of-truth lives in `data/` and follows the same layout as Hush:
 | `data/site-specific.txt` | Per-domain element-hide and network rules |
 | `data/third-party.txt` | Cross-site network blocks |
 | `data/ignored.txt` | Subtractive — lines here are stripped from sources before parsing |
+| `data/auto-reject.json` | Hand-authored `{ hostname: selector }` map for the opt-in auto-reject feature — not filter-derived |
 
 ## 🧱 Build
 
 ```sh
 npm install
 npm run fetch       # refresh the Fanboy snapshot from upstream
-npm run build       # writes extension/data/{dnr-rules.json,generic.css,cosmetic.js}
+npm run build       # writes extension/data/{dnr-rules.json,generic.css,cosmetic.js,auto-reject.js}
 npm run dev         # web-ext run — launches Firefox with the extension loaded
 npm run test        # parser unit tests
 npm run lint        # web-ext lint

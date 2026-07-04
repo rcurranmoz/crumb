@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Crumb",
   "short_name": "Crumb",
-  "version": "0.1.12",
+  "version": "0.1.13",
   "description": "Block cookie nags. Don't give a crumb.",
   "browser_specific_settings": {
     "gecko": {
@@ -18,7 +18,7 @@
     "96": "icons/96.png",
     "128": "icons/128.png"
   },
-  "permissions": ["declarativeNetRequest"],
+  "permissions": ["declarativeNetRequest", "storage"],
   "host_permissions": ["<all_urls>"],
   "action": {
     "default_icon": {
@@ -40,6 +40,12 @@
       "run_at": "document_start",
       "all_frames": true,
       "match_about_blank": false
+    },
+    {
+      "matches": ["*://consent.yahoo.com/*", "*://consent.google.com/*"],
+      "js": ["data/auto-reject.js", "auto-reject.js"],
+      "run_at": "document_idle",
+      "all_frames": false
     }
   ],
   "declarative_net_request": {

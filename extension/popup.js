@@ -17,6 +17,13 @@ const reportLink = (host, url) => {
   versionEl.textContent = `v${v}`;
   versionEl.href = `https://github.com/rcurranmoz/crumb/releases/tag/v${v}`;
 
+  const autoRejectEl = $("autoReject");
+  const { autoReject } = await browser.storage.local.get("autoReject");
+  autoRejectEl.checked = Boolean(autoReject);
+  autoRejectEl.addEventListener("change", () => {
+    browser.storage.local.set({ autoReject: autoRejectEl.checked });
+  });
+
   const [tab] = await browser.tabs.query({ active: true, currentWindow: true });
   if (!tab?.id || !tab.url || !/^https?:/i.test(tab.url)) {
     setStatus("Crumb only runs on web pages.");
