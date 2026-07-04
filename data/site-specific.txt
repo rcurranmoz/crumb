@@ -43,6 +43,10 @@ www.mixedbread.com##div:has(> [data-slot="card-header"] .lucide-cookie)
 ! bayernportal.de: generic.css hides #cookieConsentOverlay, but the full-screen
 ! dimming scrim is a separate id-less div — hide it too (see issue #24).
 www.bayernportal.de##.bg-modal-overlay
+tabstack.ai##.cm__body
+www.foreignaffairs.com##._gdpr-banner
+okaneland.com###okane-consent
+digitalfracture.co.uk###ng-banner
 
 ! Safari exclude rules are too coarse, so re-enable here
 rockpapershotgun.com###onetrust-consent-sdk
