@@ -43,7 +43,7 @@ const reportLink = (host, url) => {
 
   const displayHost = host.replace(/^w{2,3}\d*\./i, "");
   const match = res.matchedKey
-    ? res.matchedKey === displayHost
+    ? res.matchedKey.replace(/^w{2,3}\d*\./i, "") === displayHost
       ? "site rule"
       : `site rule (${res.matchedKey})`
     : res.count > 0
