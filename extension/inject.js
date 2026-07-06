@@ -2,6 +2,10 @@
   const map = globalThis.__crumbCosmetic;
   if (!map) return;
 
+  // Classes CMPs put on <html>/<body> to lock the page while a consent message
+  // is open. Stripped after we hide a banner so the page underneath is usable.
+  const LOCK_CLASSES = ["sp-message-open"];
+
   const host = location.hostname.toLowerCase();
   if (!host) return;
 
@@ -64,9 +68,26 @@
     // to "we matched something" so we don't fight legitimate modals on pages
     // where Crumb didn't fire.
     const undo = document.createElement("style");
+    // pointer-events: some modal banners (Radix/Headless UI dialogs) set an
+    // inline `pointer-events: none` on <body> while open; hiding the dialog
+    // alone would leave the whole page unclickable.
+    // :not(#crumb) is a no-op match that inflates specificity to id-level so
+    // this beats class-scoped CMP scroll-locks like Sourcepoint's
+    // `.sp-message-open body { position: fixed !important }` (issue #44).
     undo.textContent =
-      "html, body { overflow: auto !important; position: static !important; }";
+      "html:not(#crumb), body:not(#crumb) { overflow: auto !important; position: static !important; pointer-events: auto !important; }";
     (document.head || document.documentElement).appendChild(undo);
+
+    // Some CMPs lock the page by adding a class to <html>/<body> that does more
+    // than scroll-locking — Sourcepoint's `sp-message-open` also clamps <html>
+    // to 100vh/100vw and hides the nav, blanking the article even after the
+    // banner itself is hidden (issue #44). CSS can't reliably out-specify every
+    // such rule, so once we've hidden a banner we strip the known lock classes.
+    // This is page cleanup, not consent interaction (no accept/reject clicked).
+    for (const cls of LOCK_CLASSES) {
+      document.documentElement.classList.remove(cls);
+      document.body?.classList.remove(cls);
+    }
   };
 
   const send = (count) => {
