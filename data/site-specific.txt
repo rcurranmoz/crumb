@@ -24,6 +24,11 @@ fedex.com##.fxg-cookie-consent
 picnic.app##.cookies
 spotify.com###onetrust-banner-sdk
 kotaku.com,insider.com,mopo.de,theguardian.com##[id^="sp_message_container_"]
+! heise.de: Sourcepoint TCF wall. Hide the message container (also removes the
+! iframe inside it). The wall locks the page via a `.sp-message-open body`
+! position:fixed rule; inject.js's unlock now out-specifies that. The article is
+! server-rendered behind, so it becomes readable once both are neutralised. #44.
+heise.de##div[id^="sp_message_container_"]
 flyertalk.com###truste_box_overlay
 lg.com##.cookie-banner
 mubi.com###__next > div:first-child .appear-enter-done
@@ -48,6 +53,20 @@ www.foreignaffairs.com##._gdpr-banner
 okaneland.com###okane-consent
 digitalfracture.co.uk###ng-banner
 www.kinde.com###c-consent-banner
+! lovable.dev: bottom-right consent card. Per-render Tailwind classes, but a
+! stable ARIA hook on the root (see issue #42).
+lovable.dev##div[role="region"][aria-label="Cookie banner"]
+! letsdatascience.com: fixed footer consent bar, keyed on its ARIA label
+! (classes are utility soup). See issue #43.
+letsdatascience.com##div[role="region"][aria-label="Cookie consent"]
+! ...and its separate full-page dimming scrim (id-less, class-less inline-styled
+! div) that blocks clicks once the bar is hidden.
+letsdatascience.com##div[aria-hidden="true"][style*="z-index: 9998"]
+! arena.ai: Radix consent dialog — per-render id (radix-_r_*) and only Tailwind
+! utility classes, so no stable hook. Target the modal dialog wrapping the
+! "This website uses cookies" heading. Radix locks body pointer-events while
+! open; inject.js restores it on match. See issue #41.
+arena.ai##div[role="dialog"]:has(> div > h2)
 
 ! Safari exclude rules are too coarse, so re-enable here
 rockpapershotgun.com###onetrust-consent-sdk
