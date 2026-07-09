@@ -165,7 +165,9 @@ const main = () => {
     }
 
     const branch = `bot/fix-issue-${issue.number}`;
-    sh("git", ["checkout", "-b", branch]);
+    // -B (not -b) so a leftover local branch from a prior run is reset, not a
+    // fatal "branch already exists".
+    sh("git", ["checkout", "-B", branch]);
     sh("git", ["add", SITE_SPECIFIC_PATH, MANIFEST_PATH]);
     sh("git", [
       "commit", "-m",
@@ -175,7 +177,12 @@ const main = () => {
       `Fully automated by scripts/triage-issues.js — no LLM involved. Please verify\n` +
       `the selector against the live page before merging.`,
     ]);
-    sh("git", ["push", "-u", "origin", branch]);
+    // --force so an orphan branch from a run that died between push and
+    // pr-create (see #47) gets overwritten instead of rejecting a non-fast-
+    // forward push. Safe: bot/* branches are exclusively bot-owned and always
+    // regenerated from scratch. (--force-with-lease can't be used — checkout@v4
+    // only fetches main, so there's no remote-tracking ref to lease against.)
+    sh("git", ["push", "-u", "--force", "origin", branch]);
     sh("gh", [
       "pr", "create",
       "--title", `Hide cookie banner on ${hostname}`,
