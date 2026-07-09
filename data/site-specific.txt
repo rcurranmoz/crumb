@@ -67,6 +67,7 @@ letsdatascience.com##div[aria-hidden="true"][style*="z-index: 9998"]
 ! "This website uses cookies" heading. Radix locks body pointer-events while
 ! open; inject.js restores it on match. See issue #41.
 arena.ai##div[role="dialog"]:has(> div > h2)
+www.jamdesk.com##.fixed
 
 ! Safari exclude rules are too coarse, so re-enable here
 rockpapershotgun.com###onetrust-consent-sdk
