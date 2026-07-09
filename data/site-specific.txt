@@ -67,6 +67,18 @@ letsdatascience.com##div[aria-hidden="true"][style*="z-index: 9998"]
 ! "This website uses cookies" heading. Radix locks body pointer-events while
 ! open; inject.js restores it on match. See issue #41.
 arena.ai##div[role="dialog"]:has(> div > h2)
+! x.com: bottom consent bar, injected late by the SPA (never present on first
+! paint, per the report). Only Tailwind utility classes on the root, so key on
+! its stable ARIA hook; inject.js's MutationObserver catches the late insert.
+! See issue #46.
+x.com##div[role="region"][aria-label="Cookie consent"]
+! jamdesk.com: fixed footer consent bar. Utility-class soup on the root, but a
+! stable role+aria-label hook. Keyed on the bare domain so it covers www. too.
+! See issue #47.
+jamdesk.com##div[role="region"][aria-label="Cookie consent"]
+! moxiedocs.com: bottom-center consent card (a <section>). Tailwind utilities
+! only, so target its ARIA label. See issue #48.
+moxiedocs.com##section[aria-label="Privacy preferences"]
 
 ! Safari exclude rules are too coarse, so re-enable here
 rockpapershotgun.com###onetrust-consent-sdk
