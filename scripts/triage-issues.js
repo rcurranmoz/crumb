@@ -90,10 +90,19 @@ const addSiteRule = (hostname, selector) => {
 };
 
 const bumpManifestVersion = () => {
-  const manifest = JSON.parse(readFileSync(MANIFEST_PATH, "utf8"));
-  const newVersion = bumpPatch(manifest.version);
-  manifest.version = newVersion;
-  writeFileSync(MANIFEST_PATH, `${JSON.stringify(manifest, null, 2)}\n`);
+  const raw = readFileSync(MANIFEST_PATH, "utf8");
+  const newVersion = bumpPatch(JSON.parse(raw).version);
+  // Replace only the version string. Re-serializing with JSON.stringify would
+  // reflow the whole file (every compact array exploded onto its own lines),
+  // burying the one-line change under a noisy hand-formatting diff.
+  const updated = raw.replace(
+    /("version"\s*:\s*)"[^"]+"/,
+    (_, prefix) => `${prefix}"${newVersion}"`,
+  );
+  if (updated === raw) {
+    throw new Error(`could not find "version" to bump in ${MANIFEST_PATH}`);
+  }
+  writeFileSync(MANIFEST_PATH, updated);
   return newVersion;
 };
 
