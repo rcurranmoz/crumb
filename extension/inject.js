@@ -99,53 +99,81 @@
     } catch {}
   };
 
+  // Generic hits are counted by identity so late injectors add to the total
+  // without double-counting elements already seen (issue #13).
+  const genericHits = new Set();
   let genericCount = 0;
   let domainCount = 0;
   const sendTotal = () => send(genericCount + domainCount);
 
-  // Count generic matches after the DOM is parsed — at document_start it's
-  // mostly empty, and the megaquery (~15k selectors) is too expensive to re-run
-  // on every mutation. DOMContentLoaded covers most banners; the load event
-  // catches late injectors.
-  const recountGeneric = () => {
+  // Generic-rule elements are hidden by generic.css; here we only need to COUNT
+  // them so the badge/popup reflect a generic hide instead of "no rule matched,
+  // 0 hidden". Re-running the ~15k-selector megaquery over the whole document on
+  // every mutation is too expensive, so scan the full document once when it's
+  // parsed, then check only freshly-inserted subtrees. (These elements are
+  // display:none, so a CSS-animation detector can't help — animations never
+  // fire on display:none elements.)
+  const countGenericIn = (root) => {
     if (!genericRule) return;
-    try {
-      const c = document.querySelectorAll(genericRule).length;
-      if (c > genericCount) {
-        genericCount = c;
-        sendTotal();
+    let changed = false;
+    const mark = (el) => {
+      if (!genericHits.has(el)) {
+        genericHits.add(el);
+        changed = true;
       }
-    } catch {}
+    };
+    try {
+      if (root.nodeType === 1 && root.matches(genericRule)) mark(root);
+      for (const el of root.querySelectorAll(genericRule)) mark(el);
+    } catch {
+      return;
+    }
+    if (changed) {
+      genericCount = genericHits.size;
+      sendTotal();
+    }
   };
 
   if (genericRule) {
+    const scan = () => countGenericIn(document);
     if (document.readyState === "loading") {
-      document.addEventListener("DOMContentLoaded", recountGeneric, { once: true });
+      document.addEventListener("DOMContentLoaded", scan, { once: true });
     } else {
-      recountGeneric();
+      scan();
     }
-    window.addEventListener("load", recountGeneric, { once: true });
+    // Safety net for banners revealed between DOMContentLoaded and load.
+    window.addEventListener("load", scan, { once: true });
   }
 
-  // Domain-specific selectors are few; re-run on mutations to catch late injection.
-  if (domainSelectors.length) {
+  // Watch for late insertion. Domain selectors are few, so re-query the whole
+  // document; generic matches are scoped to the inserted subtrees so we never
+  // re-run the megaquery over the entire page.
+  if (domainSelectors.length || genericRule) {
     const domainJoined = domainSelectors.join(",\n");
     let timer;
-    const report = () => {
-      let c;
-      try {
-        c = document.querySelectorAll(domainJoined).length;
-      } catch {
-        return;
+    let pending = [];
+    const flush = () => {
+      if (domainSelectors.length) {
+        try {
+          domainCount = document.querySelectorAll(domainJoined).length;
+          sendTotal();
+        } catch {}
       }
-      domainCount = c;
-      sendTotal();
+      for (const node of pending) countGenericIn(node);
+      pending = [];
     };
-    const schedule = () => {
+    const schedule = (records) => {
+      if (genericRule) {
+        for (const rec of records) {
+          for (const node of rec.addedNodes) {
+            if (node.nodeType === 1) pending.push(node);
+          }
+        }
+      }
       clearTimeout(timer);
-      timer = setTimeout(report, 250);
+      timer = setTimeout(flush, 250);
     };
-    report();
+    if (domainSelectors.length) flush(); // initial domain count
     new MutationObserver(schedule).observe(document.documentElement, {
       childList: true,
       subtree: true,
