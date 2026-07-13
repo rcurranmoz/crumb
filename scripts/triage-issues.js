@@ -24,6 +24,19 @@ const SAFARI_MARKER = "! Safari exclude rules are too coarse";
 const UNSTABLE_CLASS_RE =
   /^(astro-|css-|sc-|jsx-|emotion-|styled-|_[a-z0-9]{5,}$|[a-z]{1,3}-[0-9a-f]{6,}$)/i;
 
+// CSS-module output, which the rule above misses: `CookieConsent_cookieConsent__pIj_y`
+// and `_cookie-consent_tpc72_1`. The hash suffix changes on every build. incogni.com
+// (#58) proves this churns for real: fanboy still carries a DEAD rule for that exact
+// element from an older hash of the same class.
+const CSS_MODULE_RE = /__[A-Za-z0-9_-]{4,}$|^_[A-Za-z0-9-]+_[a-z0-9]{4,}/;
+
+// A class is only trustworthy as a cookie-banner hook if it actually names the
+// thing. This is what separates `.page-cookie-container` (#59, correct) from
+// `.fixed` (#57 — a Tailwind utility meaning `position: fixed`, which would have
+// hidden every fixed-positioned element on the site: nav, modals, tooltips).
+// If no class names the banner, we bail to a human rather than guess.
+const CONSENT_WORD_RE = /(cookie|consent|gdpr|privacy|cmp|ccpa)/i;
+
 // Ids ending in a long digit run are almost always per-render generated
 // (React/Vue/Radix aria-linking ids, etc.) — not stable across page loads.
 const UNSTABLE_ID_RE = /-\d{5,}$/;
@@ -42,23 +55,64 @@ const bumpPatch = (version) => {
 // Reporters paste the banner element they inspected as the root of the
 // snippet — only that root's own attributes are trustworthy. Matching id/class
 // anywhere in the body would just as happily grab a nested heading or button.
-const firstTagAttrs = (body) => {
+const firstTag = (body) => {
   const match = body.match(/<([a-zA-Z][a-zA-Z0-9]*)\b([^>]*)>/);
-  return match ? match[2] : null;
+  return match ? { tag: match[1].toLowerCase(), attrs: match[2] } : null;
 };
 
+const attr = (attrs, name) => {
+  const match = attrs.match(new RegExp(`\\b${name}="([^"]*)"`, "i"));
+  const value = match?.[1].trim();
+  // A value containing a quote or backslash would break out of the selector
+  // string we build from it. Vanishingly rare; not worth escaping, worth refusing.
+  return value && !/["\\]/.test(value) ? value : null;
+};
+
+// Priority ladder. Every rule we hand-wrote for the #46–#62 batch came from a
+// SEMANTIC attribute (role / aria-label / aria-labelledby / data-testid), and the
+// two the bot got wrong (#60, #63 — both closed unmerged) came from reaching for a
+// class. So attributes first, classes last and only when the class names the banner.
+//
+// Returning null is a good outcome: main() then comments "needs a manual look"
+// rather than opening a PR. A no-op selector wastes a review; a wrong one ships a
+// broken page.
 const pickSelector = (body) => {
-  const attrs = firstTagAttrs(body);
-  if (!attrs) return null;
+  const root = firstTag(body);
+  if (!root) return null;
+  const { tag, attrs } = root;
 
-  const idMatch = attrs.match(/\bid="([a-zA-Z][\w-]*)"/);
-  if (idMatch && !UNSTABLE_ID_RE.test(idMatch[1])) return `#${idMatch[1]}`;
+  const id = attr(attrs, "id");
+  if (id && /^[a-zA-Z][\w-]*$/.test(id) && !UNSTABLE_ID_RE.test(id)) {
+    return `#${id}`;
+  }
 
-  const classMatch = attrs.match(/\bclass="([^"]+)"/);
-  if (classMatch) {
-    const candidate = classMatch[1]
+  // Test hooks exist to be stable, and unlike aria-label they don't move with
+  // the site's copy or locale.
+  const testId = attr(attrs, "data-testid");
+  if (testId) return `${tag}[data-testid="${testId}"]`;
+
+  const role = attr(attrs, "role");
+  const label = attr(attrs, "aria-label");
+  if (role && label) return `${tag}[role="${role}"][aria-label="${label}"]`;
+
+  const labelledBy = attr(attrs, "aria-labelledby");
+  if (role && labelledBy && !UNSTABLE_ID_RE.test(labelledBy)) {
+    return `${tag}[role="${role}"][aria-labelledby="${labelledBy}"]`;
+  }
+
+  if (label) return `${tag}[aria-label="${label}"]`;
+
+  const classes = attr(attrs, "class");
+  if (classes) {
+    const candidate = classes
       .split(/\s+/)
-      .find((c) => c && !UNSTABLE_CLASS_RE.test(c));
+      .find(
+        (c) =>
+          c &&
+          !UNSTABLE_CLASS_RE.test(c) &&
+          !CSS_MODULE_RE.test(c) &&
+          CONSENT_WORD_RE.test(c),
+      );
     if (candidate) return `.${candidate}`;
   }
   return null;
