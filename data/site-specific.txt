@@ -79,6 +79,7 @@ jamdesk.com##div[role="region"][aria-label="Cookie consent"]
 ! moxiedocs.com: bottom-center consent card (a <section>). Tailwind utilities
 ! only, so target its ARIA label. See issue #48.
 moxiedocs.com##section[aria-label="Privacy preferences"]
+incogni.com##.CookieConsent_cookieConsent__pIj_y
 
 ! Safari exclude rules are too coarse, so re-enable here
 rockpapershotgun.com###onetrust-consent-sdk
