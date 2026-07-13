@@ -79,6 +79,39 @@ jamdesk.com##div[role="region"][aria-label="Cookie consent"]
 ! moxiedocs.com: bottom-center consent card (a <section>). Tailwind utilities
 ! only, so target its ARIA label. See issue #48.
 moxiedocs.com##section[aria-label="Privacy preferences"]
+! pocketpal.dev: fixed footer consent bar. Tailwind utilities only on the root,
+! so key on the stable role+aria-label hook. See issue #57.
+pocketpal.dev##div[role="dialog"][aria-label="Cookie consent"]
+! incogni.com: footer consent <aside>. Its classes are CSS-module hashed
+! (CookieConsent_cookieConsent__pIj_y) and DO churn — fanboy's existing
+! incogni.com##._cookie-consent_tpc72_1 rule is already dead from exactly that.
+! data-testid is the only stable hook. See issue #58.
+incogni.com##aside[data-testid="cookie-consent-wrapper"]
+! tatanexarc.com: bottom consent bar, rendered twice with identical markup, so
+! the class selector hides both. Semantic (non-hashed) class, keyed on the bare
+! domain to cover www. too. See issue #59.
+tatanexarc.com##.page-cookie-container
+! frigade.com: bottom-right consent card. Tailwind utilities only, but the
+! heading it points at has a stable authored id. See issue #61.
+frigade.com##div[role="dialog"][aria-labelledby="consent-banner-heading"]
+! dw.com: consentmanager.net CMP as a centre-screen modal. The banner (#cmpbox)
+! is NOT in the light DOM — consentmanager attaches a shadow root to #cmpwrapper
+! and renders the box inside it, so no main-document CSS can reach #cmpbox (that
+! would need shadow piercing, issue #15). We don't need it: #cmpwrapper, the
+! shadow HOST, is in the light DOM, and display:none on a host hides its whole
+! shadow tree. Hiding the host also gives inject.js a countable match, so
+! unlockBodyScroll restores the article underneath.
+!
+! :not(#crumb) is a no-op match that inflates specificity to (2,0,0). A plain
+! #cmpwrapper rule (1,0,0) LOSES the cascade here — consentmanager ships its own
+! !important display rule, and among author !important declarations the winner is
+! decided by specificity then source order, both of which favour the CMP (it
+! styles the host from its own sheet, injected after our document_start <style>).
+! Same trick inject.js already uses in unlockBodyScroll. Kept site-specific rather
+! than generic: a global cmp* rule would grow generic.css and the generic
+! megaquery, and after #55 that path doesn't grow without a measured reason.
+! See issue #62.
+dw.com###cmpwrapper:not(#crumb)
 
 ! Safari exclude rules are too coarse, so re-enable here
 rockpapershotgun.com###onetrust-consent-sdk
