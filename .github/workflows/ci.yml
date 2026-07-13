@@ -1,0 +1,64 @@
+name: CI
+
+# Runs on every PR. Until this existed the only automation was the on-merge
+# release, so a bad change reached AMO before anything checked it — that is how
+# #55 ("Crumb is slowing down Firefox") shipped to users.
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+# A new push to a PR makes the in-flight run pointless.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - run: npm ci
+
+      - name: Build filter lists
+        run: npm run build
+
+      - name: Tests
+        run: npm test
+
+      - name: Lint extension
+        run: npm run lint
+
+      # The generic list is the ~15k-selector "megaquery" that inject.js runs
+      # over the whole document. It is the single most perf-sensitive thing in
+      # the extension and the blast radius of #55. Growing it should be a
+      # deliberate, measured decision — not something that slips in with a rule
+      # batch. Site-specific rules (hostname##selector) do NOT count against
+      # this budget; they only ever run on their own hostname.
+      #
+      # To raise it: confirm the growth is intentional, then bump BUDGET here in
+      # the same PR, so the increase is reviewed rather than silent.
+      - name: Generic-rule budget (#55)
+        run: |
+          BUDGET=15500
+          COUNT=$(npm run build --silent | sed -n 's/^generic rules: *//p')
+          echo "generic selectors: ${COUNT}  (budget ${BUDGET})"
+          if [ -z "$COUNT" ]; then
+            echo "::error::Could not read the generic rule count from 'npm run build'."
+            exit 1
+          fi
+          if [ "$COUNT" -gt "$BUDGET" ]; then
+            echo "::error::Generic selector count ${COUNT} exceeds the budget of ${BUDGET}."
+            echo "This is the megaquery that caused #55. If the growth is intended,"
+            echo "raise BUDGET in .github/workflows/ci.yml in this same PR."
+            exit 1
+          fi
