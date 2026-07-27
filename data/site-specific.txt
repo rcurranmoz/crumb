@@ -112,6 +112,30 @@ frigade.com##div[role="dialog"][aria-labelledby="consent-banner-heading"]
 ! megaquery, and after #55 that path doesn't grow without a measured reason.
 ! See issue #62.
 dw.com###cmpwrapper:not(#crumb)
+! socradar.io: bottom-right consent card. Tailwind/shadcn utilities only on the
+! root, so key on the role+aria-label hook. fanboy's socradar.io##.consent-banner
+! and ##.modal-backdrop are both dead — they date from the site's previous build,
+! which is exactly why the class route is not an option here. See issue #68.
+socradar.io##div[role="dialog"][aria-label="Cookie consent"]
+! maths.cam.ac.uk: fixed bottom bar injected by a bespoke Drupal module; the id
+! is hardcoded in sites/all/modules/chem_cookies/chem_cookies.cookie-consent.js.
+! No scroll lock, so hiding it needs no unlock. Keyed on the bare domain so it
+! covers www. too. Note fanboy's cam.ac.uk##.sliding-popup-bottom is the old EU
+! Cookie Compliance banner and matches nothing here. See issue #70.
+maths.cam.ac.uk###chem-cookie-banner
+! visual-paradigm.com: server-rendered footer bar with a stable authored id.
+! Keyed on the bare domain so it covers www. too. See issue #72.
+visual-paradigm.com###cookieConsent
+! st-andrews.ac.uk: the wp-sta-cookie-consent plugin's server-rendered region,
+! wrapping both the notification bar and the preferences dialog. In-flow layout
+! rather than an overlay, so display:none just removes it. Keyed on the bare
+! domain to cover the other WordPress subdomains. See issue #73.
+st-andrews.ac.uk###sta-cc
+! trifle.io: ids are hardcoded in /site-preferences.js. Hiding the root rather
+! than #trifle-cookie-banner takes the "manage preferences" modal
+! (#trifle-cookie-modal) with it in one rule. The body overflow lock lives in
+! openModal(), which needs a click, so nothing to unlock. See issue #74.
+trifle.io###trifle-cookie-consent-root
 
 ! Safari exclude rules are too coarse, so re-enable here
 rockpapershotgun.com###onetrust-consent-sdk
