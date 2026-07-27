@@ -112,6 +112,7 @@ frigade.com##div[role="dialog"][aria-labelledby="consent-banner-heading"]
 ! megaquery, and after #55 that path doesn't grow without a measured reason.
 ! See issue #62.
 dw.com###cmpwrapper:not(#crumb)
+www.visual-paradigm.com###cookieConsent
 
 ! Safari exclude rules are too coarse, so re-enable here
 rockpapershotgun.com###onetrust-consent-sdk
