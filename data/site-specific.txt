@@ -136,6 +136,7 @@ st-andrews.ac.uk###sta-cc
 ! (#trifle-cookie-modal) with it in one rule. The body overflow lock lives in
 ! openModal(), which needs a click, so nothing to unlock. See issue #74.
 trifle.io###trifle-cookie-consent-root
+portzero.net###pz-cookie-consent
 
 ! Safari exclude rules are too coarse, so re-enable here
 rockpapershotgun.com###onetrust-consent-sdk
