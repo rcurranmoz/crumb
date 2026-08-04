@@ -136,6 +136,17 @@ st-andrews.ac.uk###sta-cc
 ! (#trifle-cookie-modal) with it in one rule. The body overflow lock lives in
 ! openModal(), which needs a click, so nothing to unlock. See issue #74.
 trifle.io###trifle-cookie-consent-root
+! cloudsecurityalliance.org: server-rendered bottom-left notification, root is
+! <div class="cookie-banner" style="display:block">. The root carries no role or
+! aria-label, so the generic ARIA rule doesn't reach it; the authored class is
+! stable and the inline display:block loses to our !important. No scroll lock.
+! See issue #81.
+cloudsecurityalliance.org##.cookie-banner
+! thedecisionlab.com: React CSS-module banner. The wrapper's classes are hashed
+! (CookieBannerLocalized_wrapper__74Uiv) and the __hash suffix rotates on every
+! build, so we anchor on the stable module prefix rather than the full class —
+! same failure mode as PR #63. Corner overlay, no backdrop to unlock. See #79.
+thedecisionlab.com##[class^="CookieBannerLocalized_wrapper__"]
 
 ! Safari exclude rules are too coarse, so re-enable here
 rockpapershotgun.com###onetrust-consent-sdk
