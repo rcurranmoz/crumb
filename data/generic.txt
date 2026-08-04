@@ -26,3 +26,43 @@
 
 ! Discovered on www.skatteverket.se
 ###skv-cookie-banner
+
+! ----- ARIA-labelled consent dialogs -----
+!
+! Every rule above this line, and ~15,280 of the 15,282 selectors in the built
+! generic.css, keys on an id or a class. That list descends from Fanboy/Hush and
+! predates component libraries, and it is blind to how modern bespoke banners are
+! actually built: Tailwind/shadcn/Radix markup has no stable class or id to grab,
+! but it is labelled for accessibility, because a consent dialog that screen
+! readers can't announce is a legal problem.
+!
+! That blind spot is measurable. Of the 26 "cookie banner not hidden" reports
+! that came with pasted markup, 7 (27%) had a banner root carrying an explicit
+! dialog/region role AND an aria-label containing "cookie" — and every one of
+! them needed a hand-written site rule:
+!
+!   #42 lovable.dev          role=region  aria-label="Cookie banner"
+!   #43 letsdatascience.com  role=region  aria-label="Cookie consent"
+!   #46 x.com                role=region  aria-label="Cookie consent"
+!   #47 jamdesk.com          role=region  aria-label="Cookie consent"
+!   #57 pocketpal.dev        role=dialog  aria-label="Cookie consent"
+!   #68 socradar.io          role=dialog  aria-label="Cookie consent"
+!   #73 st-andrews.ac.uk     role=region  aria-label="Cookie preferences"
+!
+! Three of those are the *same selector string* on three different domains.
+!
+! The role gate is what keeps this safe to run globally. A page's own content
+! never carries role="dialog"/"region" with "cookie" in an author-written label,
+! so this cannot swallow an article the way a bare [aria-label*="cookie"] could.
+! "cookie" (not "consent") is the required word on purpose: "consent" appears in
+! medical and legal forms that must not be hidden, and it buys nothing here —
+! all 7 reports above match on "cookie" alone.
+!
+! Cost is one selector on a 15,282-selector megaquery, so this is not #55: the
+! selector count is the perf variable, and +1 is noise. See issue #55 and the
+! budget gate in .github/workflows/ci.yml.
+!
+! Known trade-off: on a site where the user deliberately opens a cookie-settings
+! panel from a footer link, this hides that panel too. Per-domain escape hatch is
+! the standard exception syntax, e.g. `example.com#@#[role="dialog"]...`.
+##:is([role="dialog"],[role="alertdialog"],[role="region"])[aria-label*="cookie" i]
