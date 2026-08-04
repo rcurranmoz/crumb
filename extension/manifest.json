@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Crumb",
   "short_name": "Crumb",
-  "version": "0.1.21",
+  "version": "0.1.22",
   "description": "Block cookie nags. Don't give a crumb.",
   "browser_specific_settings": {
     "gecko": {
