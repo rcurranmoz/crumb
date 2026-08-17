@@ -147,6 +147,7 @@ cloudsecurityalliance.org##.cookie-banner
 ! build, so we anchor on the stable module prefix rather than the full class —
 ! same failure mode as PR #63. Corner overlay, no backdrop to unlock. See #79.
 thedecisionlab.com##[class^="CookieBannerLocalized_wrapper__"]
+k6.io##.cookie-consent-module--wrapper--a5ce4
 
 ! Safari exclude rules are too coarse, so re-enable here
 rockpapershotgun.com###onetrust-consent-sdk
