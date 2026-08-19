@@ -147,6 +147,32 @@ cloudsecurityalliance.org##.cookie-banner
 ! build, so we anchor on the stable module prefix rather than the full class —
 ! same failure mode as PR #63. Corner overlay, no backdrop to unlock. See #79.
 thedecisionlab.com##[class^="CookieBannerLocalized_wrapper__"]
+! k6.io: Gatsby CSS-module banner, the same hashed-suffix problem as
+! thedecisionlab above — the wrapper ships as cookie-consent-module--wrapper--a5ce4
+! and the hash rotates on every build, so we anchor on the module prefix. Static
+! bottom bar, no scroll lock to undo. See issue #91.
+k6.io##[class^="cookie-consent-module--wrapper--"]
+! shopify.engineering: the "dux-privacy" consent widget. Everything on it is
+! inline-styled — no classes on the root at all — so the authored id is the only
+! handle. Bottom-left overlay with pointer-events scoped to itself, so hiding it
+! leaves the page usable with nothing to unlock. See issue #87.
+shopify.engineering###dux-privacy
+! ctgt.ai: Webflow site running Finsweet's cookie-consent script. The author
+! class (.cookie-banner-container) is whatever the last person in the Webflow
+! editor typed; fs-cc="banner" is the vendor's own hook that the script itself
+! keys on, so it survives a restyle. The root's inline display:flex loses to our
+! !important. Keyed on the bare domain to cover www. See issue #85.
+ctgt.ai##[fs-cc="banner"]
+! primevideo.com: Amazon's "Select your cookie preferences" sheet. Every class on
+! it is minified (_1ReU6k, uodBVL, DVWebNode-critical-notification) and rotates
+! per deploy, so we key on the data-testid Amazon's own tests depend on. Bottom
+! overlay, no backdrop lock. Keyed on the bare domain to cover www. See issue #88.
+primevideo.com##div[data-testid="critical-notification"]
+! musicmaster.com: bespoke "Analytics Preferences" modal, server-rendered into
+! every page with a hardcoded id and revealed by a class toggle when the `usega`
+! cookie is absent. Hiding the root leaves body.mm-usega-lock {overflow:hidden}
+! behind, which inject.js's unlock out-specifies. See issue #94.
+musicmaster.com###mmUsegaModal
 
 ! Safari exclude rules are too coarse, so re-enable here
 rockpapershotgun.com###onetrust-consent-sdk
