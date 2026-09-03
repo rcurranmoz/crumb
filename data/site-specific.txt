@@ -173,6 +173,7 @@ primevideo.com##div[data-testid="critical-notification"]
 ! cookie is absent. Hiding the root leaves body.mm-usega-lock {overflow:hidden}
 ! behind, which inject.js's unlock out-specifies. See issue #94.
 musicmaster.com###mmUsegaModal
+www.gpupartner.com##section[aria-label="Cookie notice"]
 
 ! Safari exclude rules are too coarse, so re-enable here
 rockpapershotgun.com###onetrust-consent-sdk
