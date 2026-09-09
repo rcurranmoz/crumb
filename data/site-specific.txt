@@ -173,6 +173,35 @@ primevideo.com##div[data-testid="critical-notification"]
 ! cookie is absent. Hiding the root leaves body.mm-usega-lock {overflow:hidden}
 ! behind, which inject.js's unlock out-specifies. See issue #94.
 musicmaster.com###mmUsegaModal
+! ft.com: Sourcepoint TCF message. The reporter pasted the message's own root
+! (<div id="notice" class="message type-modal">), but that lives inside the
+! Sourcepoint iframe, which is a different origin — a ft.com-keyed rule never
+! runs there, and `#notice` is far too generic to hand out anyway. The handle
+! that works from the top document is the wrapper Sourcepoint injects around the
+! iframe, same as heise.de/telegraph.co.uk above. FT also sets the
+! `sp-message-open` page lock, which inject.js already strips. See issue #100.
+ft.com##div[id^="sp_message_container_"]
+! productrise.app: Alpine.js banner. Nothing on the root but the component
+! binding — no id, no authored class — so we key on x-data, which is the name
+! the site's own script is registered under. Hiding the root takes the
+! "Customize" preferences modal (a full-screen overlay in the same subtree) with
+! it, so one rule covers both. No scroll lock. See issue #99.
+productrise.app##div[x-data="cookieConsent()"]
+! gpupartner.com: framer-motion bottom sheet with only Tailwind utilities on it
+! (fixed, inset-x-4, bg-snow) — none of them name the banner. The authored
+! aria-label is the only stable handle. It is a bare <section>, so its region
+! role is implicit and the generic ARIA rule in generic.txt (which keys on an
+! explicit role=) doesn't reach it; matching bare <section aria-label*="cookie">
+! globally would also catch the labelled sections of cookie-policy pages, so
+! this stays site-specific. Keyed on the bare domain to cover www. See #97.
+gpupartner.com##section[aria-label="Cookie notice"]
+! boot.dev: Nuxt banner with nothing but Tailwind utilities on the root, so this
+! is a conjunction rather than a single handle. .fixed.z-overlay alone would
+! match the site's page-load progress bar (fixed left-0 top-0 z-overlay h-px),
+! which is why .bottom-5 and .border-light-gold are both in the selector — the
+! four together match the banner and nothing else in the served markup. Keyed on
+! the bare domain to cover www. See issue #96.
+boot.dev##div.fixed.bottom-5.z-overlay.border-light-gold
 
 ! Safari exclude rules are too coarse, so re-enable here
 rockpapershotgun.com###onetrust-consent-sdk
