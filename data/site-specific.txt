@@ -202,6 +202,7 @@ gpupartner.com##section[aria-label="Cookie notice"]
 ! four together match the banner and nothing else in the served markup. Keyed on
 ! the bare domain to cover www. See issue #96.
 boot.dev##div.fixed.bottom-5.z-overlay.border-light-gold
+www.theverge.com##aside[role="dialog"][aria-labelledby="pmc-privacy-banner-heading"]
 
 ! Safari exclude rules are too coarse, so re-enable here
 rockpapershotgun.com###onetrust-consent-sdk
