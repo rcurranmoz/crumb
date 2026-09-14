@@ -202,6 +202,14 @@ gpupartner.com##section[aria-label="Cookie notice"]
 ! four together match the banner and nothing else in the served markup. Keyed on
 ! the bare domain to cover www. See issue #96.
 boot.dev##div.fixed.bottom-5.z-overlay.border-light-gold
+! theverge.com: PMC's "Terms of Use/Your Privacy Rights" bar, a fixed bottom
+! sheet. The generic ARIA rule can't reach it — it names its heading with
+! aria-labelledby rather than carrying an aria-label, and CSS can't follow an
+! idref. The only class on the root is a CSS-module hash (_1bjmjup0), so role
+! plus the aria-labelledby target is the handle, the same shape as frigade.com
+! in the triage tests. Checked against the live page: one match, and no scroll
+! lock to unwind. Keyed on the bare domain to cover www. See issue #103.
+theverge.com##aside[role="dialog"][aria-labelledby="pmc-privacy-banner-heading"]
 
 ! Safari exclude rules are too coarse, so re-enable here
 rockpapershotgun.com###onetrust-consent-sdk
