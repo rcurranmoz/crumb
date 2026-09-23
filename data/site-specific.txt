@@ -210,6 +210,7 @@ boot.dev##div.fixed.bottom-5.z-overlay.border-light-gold
 ! in the triage tests. Checked against the live page: one match, and no scroll
 ! lock to unwind. Keyed on the bare domain to cover www. See issue #103.
 theverge.com##aside[role="dialog"][aria-labelledby="pmc-privacy-banner-heading"]
+www.strix.ai##div[role="dialog"][aria-labelledby="cm__title"]
 
 ! Safari exclude rules are too coarse, so re-enable here
 rockpapershotgun.com###onetrust-consent-sdk
