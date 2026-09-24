@@ -210,6 +210,34 @@ boot.dev##div.fixed.bottom-5.z-overlay.border-light-gold
 ! in the triage tests. Checked against the live page: one match, and no scroll
 ! lock to unwind. Keyed on the bare domain to cover www. See issue #103.
 theverge.com##aside[role="dialog"][aria-labelledby="pmc-privacy-banner-heading"]
+! antfly.io, strix.ai: vanilla-cookieconsent v3 (orestbida). The library
+! appends a single <div id="cc-main"> to <body> and renders both the consent box
+! (.cm) and the preferences modal (.pm) inside it, so hiding the root takes both.
+! The box names itself with aria-labelledby="cm__title" rather than an
+! aria-label, which is why the generic ARIA rule misses it. Checked against both
+! sites' bundles: id="cc-main" is a literal in the library code, and neither
+! config sets disablePageInteraction, so there is no html lock to unwind.
+! Site-specific rather than generic until the id has had false-positive work.
+! Keyed on the bare domain to cover www. See issues #105 and #110.
+antfly.io###cc-main
+strix.ai###cc-main
+! browser-use.com: React <aside> with Tailwind utilities only; the authored
+! aria-label is the stable handle (it's in the layout chunk as a literal). An
+! <aside> is a complementary landmark, not role=dialog/region, so the generic
+! ARIA rule doesn't reach it. No scroll lock. See issue #109.
+browser-use.com##aside[aria-label="Cookie preferences"]
+! hacktron.ai: Astro island hydrating a React CookieConsent component. The
+! inner <section>'s aria-label is the banner title ("We value your privacy"),
+! which is copy and liable to change; the island's component-url names the
+! module. Match on the path stem, not the content hash, so a rebuild doesn't
+! kill the rule. Keyed on the bare domain to cover www. See issue #106.
+hacktron.ai##astro-island[component-url*="/cookie-consent."]
+! critikid.com: Svelte banner, Tailwind utilities only. The layout bundle has
+! two variants (compact bar, and the expanded "Customize" card); both roots
+! share .fixed.z-40.bg-surface-invert-main.rounded-t-2xl, and that conjunction
+! appears nowhere else in the site's chunks (the one other invert-main surface
+! is a rounded-t-3xl modal). No scroll lock. See issue #112.
+critikid.com##div.fixed.z-40.bg-surface-invert-main.rounded-t-2xl
 
 ! Safari exclude rules are too coarse, so re-enable here
 rockpapershotgun.com###onetrust-consent-sdk
