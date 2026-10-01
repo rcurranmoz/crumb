@@ -238,6 +238,7 @@ hacktron.ai##astro-island[component-url*="/cookie-consent."]
 ! appears nowhere else in the site's chunks (the one other invert-main surface
 ! is a rounded-t-3xl modal). No scroll lock. See issue #112.
 critikid.com##div.fixed.z-40.bg-surface-invert-main.rounded-t-2xl
+lathoa.ai##div[role="region"][aria-labelledby="consent-title"]
 
 ! Safari exclude rules are too coarse, so re-enable here
 rockpapershotgun.com###onetrust-consent-sdk
