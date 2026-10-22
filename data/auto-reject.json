@@ -1,4 +1,5 @@
 {
   "consent.yahoo.com": "button.reject-all",
-  "consent.google.com": "button[jsname=\"tWT92d\"], button[aria-label=\"Reject all\"]"
+  "consent.google.com": "button[jsname=\"tWT92d\"], button[aria-label=\"Reject all\"]",
+  "consent.youtube.com": "button[jsname=\"tWT92d\"], button[aria-label=\"Reject all\"]"
 }

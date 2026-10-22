@@ -238,6 +238,17 @@ hacktron.ai##astro-island[component-url*="/cookie-consent."]
 ! appears nowhere else in the site's chunks (the one other invert-main surface
 ! is a rounded-t-3xl modal). No scroll lock. See issue #112.
 critikid.com##div.fixed.z-40.bg-surface-invert-main.rounded-t-2xl
+! lathoa.ai: Next.js + framer-motion banner, Tailwind utilities only. The root
+! carries role="region" but is labelled by reference (aria-labelledby), not by
+! aria-label, so the generic ARIA rule can't see it. Both attributes are string
+! literals in the [locale] layout chunk. No scroll lock. See issue #117.
+lathoa.ai##div[role="region"][aria-labelledby="consent-title"]
+! asiaai.fyi: Real Cookie Banner (devowl, WordPress). Its id and every class are
+! per-install hashes (a772d-ext-*), but the full-screen overlay root that holds
+! the <dialog> carries RCB's own consent-skip-blocker attribute, which is
+! server-rendered. Scroll lock is the generic html/body overflow, which
+! inject.js already undoes. See issue #107.
+asiaai.fyi##div[consent-skip-blocker="1"]
 
 ! Safari exclude rules are too coarse, so re-enable here
 rockpapershotgun.com###onetrust-consent-sdk
