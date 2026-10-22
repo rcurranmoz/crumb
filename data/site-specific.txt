@@ -249,6 +249,11 @@ lathoa.ai##div[role="region"][aria-labelledby="consent-title"]
 ! server-rendered. Scroll lock is the generic html/body overflow, which
 ! inject.js already undoes. See issue #107.
 asiaai.fyi##div[consent-skip-blocker="1"]
+! autobarn.com.au: Tailwind utilities only, and the site 403s curl so this is
+! from the reporter's markup. shadow-banner is a custom theme token, not stock
+! Tailwind, so paired with .fixed it names this element. No scroll lock (it's a
+! corner toast). See issue #92.
+autobarn.com.au##section.fixed.shadow-banner
 
 ! Safari exclude rules are too coarse, so re-enable here
 rockpapershotgun.com###onetrust-consent-sdk
