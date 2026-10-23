@@ -249,6 +249,14 @@ lathoa.ai##div[role="region"][aria-labelledby="consent-title"]
 ! server-rendered. Scroll lock is the generic html/body overflow, which
 ! inject.js already undoes. See issue #107.
 asiaai.fyi##div[consent-skip-blocker="1"]
+! unternehmensregister.de: Next.js + headlessui. The generic ARIA rule hides the
+! dialog (aria-label="Cookie Dialog"), but its backdrop is a separate full-screen
+! button in a sibling transition div, and the dialog itself portals elsewhere, so
+! nothing structural links the two. The dialogContainer component is shared with
+! the site's info popups, so only hide the backdrop while a cookie dialog is on
+! the page. Prefix-match the CSS-module hash so a rebuild doesn't kill the rule.
+! See issue #120.
+unternehmensregister.de##body:has([role="dialog"][aria-label*="cookie" i]) [class*="dialogContainer_bgContainer__"]
 ! autobarn.com.au: Tailwind utilities only, and the site 403s curl so this is
 ! from the reporter's markup. shadow-banner is a custom theme token, not stock
 ! Tailwind, so paired with .fixed it names this element. No scroll lock (it's a
