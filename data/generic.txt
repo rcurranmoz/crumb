@@ -66,3 +66,18 @@
 ! panel from a footer link, this hides that panel too. Per-domain escape hatch is
 ! the standard exception syntax, e.g. `example.com#@#[role="dialog"]...`.
 ##:is([role="dialog"],[role="alertdialog"],[role="region"])[aria-label*="cookie" i]
+!
+! Stranded backdrops. The rule above hides a dialog *panel*, but a modal's
+! backdrop is usually a separate element that carries no label, so it stays up
+! and the page is left grey and unclickable — worse than showing the banner.
+! Where a consent layer is shared across many domains, close that here.
+!
+! Atruvia's bank platform (the Volksbank/Raiffeisenbank sites, e.g.
+! bankhaus-rsa.de, volksbank-mittelhessen.de, berliner-volksbank.de) opens its
+! consent layer as an Angular Material dialog and adds .cookie-notice-container
+! to the shared .cdk-overlay-container while it's open, removing it on close
+! (string literals in the consent-layer lazy chunk). Gating on that class means
+! this only fires while the consent layer is up — do NOT drop it and hide
+! .cdk-overlay-container alone, that would take out every Angular dialog on the
+! page. See issue #119.
+##.cdk-overlay-container.cookie-notice-container
